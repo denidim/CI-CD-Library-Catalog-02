@@ -85,7 +85,7 @@ test('Add book with corect data', async({page})=>{
     expect(page.url()).toBe('http://localhost:3000/catalog')
 })
 
-test('Add book with empty title field', async ({ page }) => {
+test('Add book with empty title field', async ({  page }) => {
   await page.goto('http://localhost:3000/login');
 
   await page.fill('input[name="email"]', 'peter@abv.bg');
