@@ -4,8 +4,9 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 jobs:
-  build_test_deploy:
+  build_test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
@@ -25,3 +26,25 @@ jobs:
       run: npx playwright install  
     - name: Start UI tests
       run: npm run test:ui
+
+  deploy_backend:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: build_test
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_BACKEND_KEY }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+
+  deploy_frontend:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: deploy_backend
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_FRONTEND_KEY }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
